@@ -33,4 +33,9 @@ noBtn.addEventListener('mouseenter', () => {
 
     noBtn.style.left = `${x}px`;
     noBtn.style.top = `${y}px`;
+
+    const x = 50 + Math.random() * (vw - 100); // 50px padding
+    const y = 50 + Math.random() * (vh - 100);
+
 });
+
