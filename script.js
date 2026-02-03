@@ -3,7 +3,7 @@ const yesBtn = document.getElementById("yes-btn");
 const buttonsBox = document.querySelector(".buttons");
 const heartsContainer = document.querySelector(".hearts");
 
-/* --- SMART DODGE (stays inside card) --- */
+/* --- SMART NO BUTTON DODGE (STAYS INSIDE CARD) --- */
 function moveNoButton() {
   const boxRect = buttonsBox.getBoundingClientRect();
   const btnRect = noBtn.getBoundingClientRect();
@@ -24,15 +24,15 @@ noBtn.addEventListener("mouseenter", moveNoButton);
 /* Mobile touch */
 noBtn.addEventListener("touchstart", moveNoButton);
 
-/* YES click */
+/* YES button action */
 yesBtn.addEventListener("click", () => {
-  alert("YAYYY 💖 I knew you’d say YES 😍");
+  alert("YAYYY 💖 I knew you'd say YES 😍");
 });
 
-/* --- HEART ANIMATION --- */
+/* --- FLOATING HEARTS --- */
 function createHeart() {
   const heart = document.createElement("span");
-  heart.innerText = "❤️";
+  heart.textContent = "❤️";
   heart.style.left = Math.random() * 100 + "vw";
   heart.style.animationDuration = 3 + Math.random() * 3 + "s";
   heartsContainer.appendChild(heart);
