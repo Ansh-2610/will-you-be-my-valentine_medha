@@ -1,55 +1,86 @@
-/* Center everything */
-body {
-    margin: 0;
-    padding: 0;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: linear-gradient(135deg, #f6d365, #fda085);
-    font-family: 'Arial', sans-serif;
+* {
+  box-sizing: border-box;
+  font-family: 'Arial', sans-serif;
 }
 
-.container {
-    text-align: center;
+body {
+  margin: 0;
+  height: 100vh;
+  background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Card */
+.card {
+  background: white;
+  padding: 30px 25px;
+  border-radius: 18px;
+  text-align: center;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+  width: 90%;
+  max-width: 420px;
+  position: relative;
+  z-index: 2;
 }
 
 h1 {
-    font-size: 2.5rem;
-    color: #fff;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-    margin-bottom: 2rem;
+  font-size: 1.8rem;
+  margin-bottom: 25px;
 }
 
+/* Buttons */
 .buttons {
-    position: relative;
+  position: relative;
+  height: 90px;
 }
 
 button {
-    padding: 1rem 2rem;
-    margin: 0 1rem;
-    font-size: 1.2rem;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    transition: transform 0.2s;
+  padding: 14px 26px;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
 }
 
 #yes-btn {
-    background-color: #ff6b81;
-    color: #fff;
-}
-
-#yes-btn:hover {
-    transform: scale(1.1);
+  background: #ff4d6d;
+  color: white;
 }
 
 #no-btn {
-    position: absolute;
-    left: 150px; /* initial position */
-    top: 0;
-    background-color: #1e90ff;
-    color: #fff;
-    transition: all 0.5s ease; /* smooth glide */
+  position: absolute;
+  left: 160px;
+  top: 0;
+  background: #adb5bd;
+  transition: left 0.45s ease, top 0.45s ease;
+}
+
+/* Floating hearts */
+.hearts span {
+  position: absolute;
+  bottom: -20px;
+  font-size: 20px;
+  animation: floatUp linear infinite;
+  opacity: 0.8;
+}
+
+@keyframes floatUp {
+  from {
+    transform: translateY(0);
+    opacity: 0.8;
+  }
+  to {
+    transform: translateY(-110vh);
+    opacity: 0;
+  }
+}
+
+/* Mobile tweaks */
+@media (max-width: 480px) {
+  h1 {
+    font-size: 1.5rem;
+  }
 }
