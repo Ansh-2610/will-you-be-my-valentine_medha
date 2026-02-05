@@ -23,8 +23,8 @@ resizeCanvas();
 //  NO BUTTON: GLIDE AWAY + SHRINK ON TOUCH (desktop + mobile)
 // =====================================================
 let lastMove = 0;
-const REPEL_RADIUS = 110;   // bigger = harder to catch
-const MOVE_COOLDOWN = 70;   // smaller = faster response
+const REPEL_RADIUS = 140;   // bigger = harder to catch
+const MOVE_COOLDOWN = 40;   // smaller = faster response
 const PAD = 10;
 
 function getBtnCenter(rect) {
