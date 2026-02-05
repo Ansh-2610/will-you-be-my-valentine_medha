@@ -20,36 +20,42 @@ window.addEventListener("resize", resizeCanvas);
 resizeCanvas();
 
 // =====================================================
-//  NO BUTTON: REPULSOR FIELD (desktop + mobile)
+//  NO BUTTON: GLIDE AWAY + SHRINK ON TOUCH (desktop + mobile)
 // =====================================================
 let lastMove = 0;
-
-// You can tweak these two for “feel”
-const REPEL_RADIUS = 95;    // px: how close the pointer can get
-const MOVE_COOLDOWN = 120;  // ms: prevents jitter
+const REPEL_RADIUS = 110;   // bigger = harder to catch
+const MOVE_COOLDOWN = 70;   // smaller = faster response
+const PAD = 10;
 
 function getBtnCenter(rect) {
   return { cx: rect.left + rect.width / 2, cy: rect.top + rect.height / 2 };
 }
 
 function ensureNoBtnInitialized() {
-  // If the button never got positioned yet, set a good starting point
   const left = parseFloat(noBtn.style.left);
   const top = parseFloat(noBtn.style.top);
   if (Number.isFinite(left) && Number.isFinite(top)) return;
 
   const boxRect = buttonsBox.getBoundingClientRect();
   const btnRect = noBtn.getBoundingClientRect();
-  const pad = 10;
 
-  const maxX = boxRect.width - btnRect.width - pad * 2;
-  const maxY = boxRect.height - btnRect.height - pad * 2;
+  const maxX = boxRect.width - btnRect.width - PAD * 2;
+  const maxY = boxRect.height - btnRect.height - PAD * 2;
 
-  noBtn.style.left = `${pad + maxX * 0.62}px`;
-  noBtn.style.top = `${pad + maxY * 0.20}px`;
+  noBtn.style.left = `${PAD + maxX * 0.62}px`;
+  noBtn.style.top = `${PAD + maxY * 0.20}px`;
 }
 
-function moveNoButtonAwayFrom(pointerX, pointerY) {
+function setNearState(isNear) {
+  noBtn.classList.toggle("near", isNear);
+}
+
+function shrinkMomentarily() {
+  noBtn.classList.add("shrink");
+  setTimeout(() => noBtn.classList.remove("shrink"), 260);
+}
+
+function glideNoButtonAway(pointerX, pointerY) {
   const now = Date.now();
   if (now - lastMove < MOVE_COOLDOWN) return;
   lastMove = now;
@@ -59,12 +65,15 @@ function moveNoButtonAwayFrom(pointerX, pointerY) {
   const boxRect = buttonsBox.getBoundingClientRect();
   const btnRect = noBtn.getBoundingClientRect();
 
-  const pad = 10;
+  const pad = PAD;
   const maxX = boxRect.width - btnRect.width - pad * 2;
   const maxY = boxRect.height - btnRect.height - pad * 2;
 
-  // current NO button center
   const { cx: btnCx, cy: btnCy } = getBtnCenter(btnRect);
+  const dist = Math.hypot(btnCx - pointerX, btnCy - pointerY);
+
+  setNearState(dist < REPEL_RADIUS + 20);
+  if (dist > REPEL_RADIUS) return;
 
   // direction away from pointer (normalized)
   let dx = btnCx - pointerX;
@@ -73,18 +82,18 @@ function moveNoButtonAwayFrom(pointerX, pointerY) {
   dx /= len;
   dy /= len;
 
-  // Jump away
-  const jump = REPEL_RADIUS + 30;
+  const currentLeft = parseFloat(noBtn.style.left) || 0;
+  const currentTop = parseFloat(noBtn.style.top) || 0;
 
-  const currentLeft = parseFloat(noBtn.style.left);
-  const currentTop = parseFloat(noBtn.style.top);
+  // glide feel: jump scales with closeness
+  const closeness = clamp((REPEL_RADIUS - dist) / REPEL_RADIUS, 0, 1);
+  const jump = 60 + 90 * closeness; // 60..150 px
 
   let newLeft = currentLeft + dx * jump;
   let newTop = currentTop + dy * jump;
 
-  // If still too near, teleport randomly
-  const dist = Math.hypot(btnCx - pointerX, btnCy - pointerY);
-  if (dist < REPEL_RADIUS + 6) {
+  // occasional random hop to stay uncatchable
+  if (Math.random() < 0.08) {
     newLeft = pad + Math.random() * maxX;
     newTop = pad + Math.random() * maxY;
   }
@@ -92,37 +101,38 @@ function moveNoButtonAwayFrom(pointerX, pointerY) {
   newLeft = clamp(newLeft, pad, pad + maxX);
   newTop = clamp(newTop, pad, pad + maxY);
 
+  // CSS transitions handle the glide
   noBtn.style.left = `${newLeft}px`;
   noBtn.style.top = `${newTop}px`;
-
-  // micro polish
-  noBtn.animate(
-    [{ transform: "translateY(0)" }, { transform: "translateY(-3px)" }, { transform: "translateY(0)" }],
-    { duration: 180, easing: "ease-out" }
-  );
 }
 
 function handlePointer(clientX, clientY) {
-  ensureNoBtnInitialized();
-  const rect = noBtn.getBoundingClientRect();
-  const { cx, cy } = getBtnCenter(rect);
-  const dist = Math.hypot(cx - clientX, cy - clientY);
-
-  if (dist < REPEL_RADIUS) {
-    moveNoButtonAwayFrom(clientX, clientY);
-  }
+  glideNoButtonAway(clientX, clientY);
 }
 
-// Use Pointer Events where supported (covers mouse + touch + pen)
+// unified for mouse + touch + pen
 buttonsBox.addEventListener("pointermove", (e) => {
   handlePointer(e.clientX, e.clientY);
 });
 
-// Extra safety: if somehow hovered/focused, still escape
-noBtn.addEventListener("pointerenter", (e) => moveNoButtonAwayFrom(e.clientX, e.clientY));
+// if user tries to tap/click NO: shrink + escape immediately
+noBtn.addEventListener("pointerdown", (e) => {
+  e.preventDefault();
+  shrinkMomentarily();
+  glideNoButtonAway(e.clientX, e.clientY);
+});
+
+// if NO somehow gets focus
 noBtn.addEventListener("focus", () => {
   const boxRect = buttonsBox.getBoundingClientRect();
-  moveNoButtonAwayFrom(boxRect.left + boxRect.width / 2, boxRect.top + boxRect.height / 2);
+  shrinkMomentarily();
+  glideNoButtonAway(boxRect.left + boxRect.width / 2, boxRect.top + boxRect.height / 2);
+});
+
+// extra safety: if cursor lands on it
+noBtn.addEventListener("pointerenter", (e) => {
+  shrinkMomentarily();
+  glideNoButtonAway(e.clientX, e.clientY);
 });
 
 // ----- Floating hearts -----
