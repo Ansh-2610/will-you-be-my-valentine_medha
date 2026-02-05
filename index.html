@@ -3,22 +3,63 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Will You Be My Valentine Medha? 💖</title>
+  <title>Will You Be My Valentine, Medha? 💖</title>
+  <meta name="description" content="A sweet Valentine proposal for Medha." />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-
-  <!-- Floating hearts -->
-  <div class="hearts"></div>
-
-  <div class="card">
-    <h1>Will you be my Valentine? 💘</h1>
-
-    <div class="buttons">
-      <button id="yes-btn">YES 💕</button>
-      <button id="no-btn">NO 😅</button>
-    </div>
+  <!-- ambient background -->
+  <div class="bg" aria-hidden="true">
+    <div class="grain"></div>
+    <div class="glow glow--a"></div>
+    <div class="glow glow--b"></div>
+    <div class="hearts" id="hearts"></div>
   </div>
+
+  <main class="wrap">
+    <section class="card" role="group" aria-label="Valentine card">
+      <header class="header">
+        <div class="badge" aria-hidden="true">💌</div>
+        <h1>Will you be my Valentine, <span class="name">Medha</span>?</h1>
+        <p class="sub">No pressure… but I’d be ridiculously happy if you said yes.</p>
+      </header>
+
+      <div class="buttons" aria-label="Response buttons">
+        <button id="yes-btn" class="btn btn--yes" type="button">
+          <span class="btn__icon" aria-hidden="true">💖</span>
+          YES
+        </button>
+
+        <button id="no-btn" class="btn btn--no" type="button">
+          <span class="btn__icon" aria-hidden="true">😅</span>
+          NO
+        </button>
+      </div>
+
+      <footer class="footer">
+        <span class="hint">Tip: the “NO” button is… shy.</span>
+      </footer>
+    </section>
+
+    <!-- confetti canvas -->
+    <canvas id="confetti" class="confetti" aria-hidden="true"></canvas>
+
+    <!-- modal -->
+    <div class="modal" id="modal" aria-hidden="true">
+      <div class="modal__backdrop" data-close="true"></div>
+      <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <h2 id="modalTitle">YAYYY 💖</h2>
+        <p class="modal__text">
+          I knew you’d say YES 😍<br/>
+          Happy Valentine’s, Medha ✨
+        </p>
+        <button class="btn btn--yes modal__btn" id="close-modal" type="button">
+          <span class="btn__icon" aria-hidden="true">🌸</span>
+          Close
+        </button>
+      </div>
+    </div>
+  </main>
 
   <script src="script.js"></script>
 </body>
