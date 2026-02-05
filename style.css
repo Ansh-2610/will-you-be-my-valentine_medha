@@ -194,7 +194,7 @@ h1{
 
 /* shrink on touch/click attempt */
 .btn--no.shrink{
-  transform: scale(0.72);
+  transform: scale(0.30);
 }
 
 /* Footer hint */
