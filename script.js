@@ -19,38 +19,113 @@ function resizeCanvas() {
 window.addEventListener("resize", resizeCanvas);
 resizeCanvas();
 
-// ----- NO button dodge (smooth + stays inside box) -----
-function moveNoButton() {
+// =====================================================
+//  NO BUTTON: REPULSOR FIELD (desktop + mobile)
+// =====================================================
+let lastMove = 0;
+
+// You can tweak these two for “feel”
+const REPEL_RADIUS = 95;    // px: how close the pointer can get
+const MOVE_COOLDOWN = 120;  // ms: prevents jitter
+
+function getBtnCenter(rect) {
+  return { cx: rect.left + rect.width / 2, cy: rect.top + rect.height / 2 };
+}
+
+function ensureNoBtnInitialized() {
+  // If the button never got positioned yet, set a good starting point
+  const left = parseFloat(noBtn.style.left);
+  const top = parseFloat(noBtn.style.top);
+  if (Number.isFinite(left) && Number.isFinite(top)) return;
+
   const boxRect = buttonsBox.getBoundingClientRect();
   const btnRect = noBtn.getBoundingClientRect();
-
-  // padding inside the buttons container
   const pad = 10;
 
   const maxX = boxRect.width - btnRect.width - pad * 2;
   const maxY = boxRect.height - btnRect.height - pad * 2;
 
-  const x = pad + Math.random() * maxX;
-  const y = pad + Math.random() * maxY;
+  noBtn.style.left = `${pad + maxX * 0.62}px`;
+  noBtn.style.top = `${pad + maxY * 0.20}px`;
+}
 
-  noBtn.style.left = `${x}px`;
-  noBtn.style.top = `${y}px`;
+function moveNoButtonAwayFrom(pointerX, pointerY) {
+  const now = Date.now();
+  if (now - lastMove < MOVE_COOLDOWN) return;
+  lastMove = now;
 
-  // micro-wiggle
+  ensureNoBtnInitialized();
+
+  const boxRect = buttonsBox.getBoundingClientRect();
+  const btnRect = noBtn.getBoundingClientRect();
+
+  const pad = 10;
+  const maxX = boxRect.width - btnRect.width - pad * 2;
+  const maxY = boxRect.height - btnRect.height - pad * 2;
+
+  // current NO button center
+  const { cx: btnCx, cy: btnCy } = getBtnCenter(btnRect);
+
+  // direction away from pointer (normalized)
+  let dx = btnCx - pointerX;
+  let dy = btnCy - pointerY;
+  const len = Math.hypot(dx, dy) || 1;
+  dx /= len;
+  dy /= len;
+
+  // Jump away
+  const jump = REPEL_RADIUS + 30;
+
+  const currentLeft = parseFloat(noBtn.style.left);
+  const currentTop = parseFloat(noBtn.style.top);
+
+  let newLeft = currentLeft + dx * jump;
+  let newTop = currentTop + dy * jump;
+
+  // If still too near, teleport randomly
+  const dist = Math.hypot(btnCx - pointerX, btnCy - pointerY);
+  if (dist < REPEL_RADIUS + 6) {
+    newLeft = pad + Math.random() * maxX;
+    newTop = pad + Math.random() * maxY;
+  }
+
+  newLeft = clamp(newLeft, pad, pad + maxX);
+  newTop = clamp(newTop, pad, pad + maxY);
+
+  noBtn.style.left = `${newLeft}px`;
+  noBtn.style.top = `${newTop}px`;
+
+  // micro polish
   noBtn.animate(
-    [{ transform: "translateY(0)" }, { transform: "translateY(-2px)" }, { transform: "translateY(0)" }],
-    { duration: 220, easing: "ease-out" }
+    [{ transform: "translateY(0)" }, { transform: "translateY(-3px)" }, { transform: "translateY(0)" }],
+    { duration: 180, easing: "ease-out" }
   );
 }
 
-// Desktop hover / Mobile touch
-noBtn.addEventListener("mouseenter", moveNoButton);
-noBtn.addEventListener("touchstart", (e) => { e.preventDefault(); moveNoButton(); }, { passive: false });
+function handlePointer(clientX, clientY) {
+  ensureNoBtnInitialized();
+  const rect = noBtn.getBoundingClientRect();
+  const { cx, cy } = getBtnCenter(rect);
+  const dist = Math.hypot(cx - clientX, cy - clientY);
 
-// Optional: If someone tabs to NO, dodge too (fun + accessible)
-noBtn.addEventListener("focus", moveNoButton);
+  if (dist < REPEL_RADIUS) {
+    moveNoButtonAwayFrom(clientX, clientY);
+  }
+}
 
-// ----- Floating hearts (prettier, varied drift/size) -----
+// Use Pointer Events where supported (covers mouse + touch + pen)
+buttonsBox.addEventListener("pointermove", (e) => {
+  handlePointer(e.clientX, e.clientY);
+});
+
+// Extra safety: if somehow hovered/focused, still escape
+noBtn.addEventListener("pointerenter", (e) => moveNoButtonAwayFrom(e.clientX, e.clientY));
+noBtn.addEventListener("focus", () => {
+  const boxRect = buttonsBox.getBoundingClientRect();
+  moveNoButtonAwayFrom(boxRect.left + boxRect.width / 2, boxRect.top + boxRect.height / 2);
+});
+
+// ----- Floating hearts -----
 function createHeart() {
   const heart = document.createElement("span");
   heart.textContent = Math.random() > 0.5 ? "❤️" : "💗";
@@ -88,7 +163,7 @@ window.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && modal.getAttribute("aria-hidden") === "false") closeModal();
 });
 
-// ----- Confetti (lightweight) -----
+// ----- Confetti -----
 let confetti = [];
 let confettiRunning = false;
 
@@ -118,7 +193,6 @@ function drawConfetti() {
     p.a += p.va;
     p.life -= 1;
 
-    // no hardcoded colors: use gradients from current theme (soft)
     ctx.save();
     ctx.translate(p.x, p.y);
     ctx.rotate(p.a);
@@ -150,12 +224,10 @@ function drawConfetti() {
 yesBtn.addEventListener("click", () => {
   openModal();
 
-  // confetti burst
   spawnConfetti();
   confettiRunning = true;
   drawConfetti();
 
-  // gentle “pulse” on card
   document.querySelector(".card").animate(
     [{ transform: "scale(1)" }, { transform: "scale(1.015)" }, { transform: "scale(1)" }],
     { duration: 520, easing: "ease-out" }
