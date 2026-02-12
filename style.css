@@ -82,15 +82,15 @@ body{
 
 .card{
   width:min(520px, 92vw);
-  background: rgba(255,255,255,.86);
-  backdrop-filter: blur(14px);
-  border: 1px solid rgba(255,255,255,.55);
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(25px) saturate(180%);
+  -webkit-backdrop-filter: blur(25px) saturate(180%);
+  border: 1px solid rgba(255,255,255,0.35);
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  box-shadow: 0 25px 70px rgba(0,0,0,.35);
   padding: 28px 26px 18px;
   position:relative;
   z-index:2;
-  transform: translateZ(0);
 }
 
 .header{
