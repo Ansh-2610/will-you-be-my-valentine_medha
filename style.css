@@ -113,7 +113,7 @@ h1{
   letter-spacing: -0.02em;
 }
 .name{
-  background: linear-gradient(90deg, var(--yes2), #ff7aa2);
+  background: linear-gradient(90deg, var(--yes2), #080606);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
