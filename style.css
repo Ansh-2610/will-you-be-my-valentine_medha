@@ -136,11 +136,19 @@ h1{
 .name{
   color: inherit;
 }
-.sub{
+/* .sub{
   margin: 0 auto;
   max-width: 40ch;
   font-size: 0.98rem;
   color: var(--muted);
+  line-height: 1.45;
+} */
+
+.sub{
+  margin: 0 auto;
+  max-width: 40ch;
+  font-size: 0.98rem;
+  color: var(--text);
   line-height: 1.45;
 }
 
@@ -221,9 +229,11 @@ h1{
 .footer{
   margin-top: 12px;
   text-align:center;
-  color: rgba(31,41,55,.6);
+  color: var(--text);
   font-size: .86rem;
+  font-weight: 500;
 }
+
 .hint{
   display:inline-flex;
   gap:8px;
