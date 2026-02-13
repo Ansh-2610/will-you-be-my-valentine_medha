@@ -155,70 +155,63 @@ h1{
 /* --- Buttons --- */
 .buttons{
   margin-top: 22px;
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  position:relative;
+  height: 92px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
   gap: 14px;
   padding: 10px;
   border-radius: 16px;
   background: rgba(255,255,255,.55);
   border: 1px solid rgba(255,255,255,.65);
-
-  /* more robust sizing */
-  min-height: 88px;
 }
 
-/* Make both buttons consistent and responsive */
 .btn{
   border: none;
   border-radius: 14px;
   padding: 14px 22px;
   font-weight: 700;
   letter-spacing: .02em;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  user-select: none;
-  outline: none;
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
   transition: transform .18s ease, box-shadow .18s ease, background .18s ease, filter .18s ease;
-
-  /* helps on mobile */
-  min-width: 140px;
+  user-select:none;
+  position:relative;
+  outline: none;
 }
 
-/* On very small screens, allow buttons to shrink nicely */
-@media (max-width: 380px){
-  .btn{ min-width: 0; padding: 12px 16px; }
-  .buttons{ gap: 10px; }
-}
+.btn:focus-visible{ box-shadow: var(--ring); }
 
-/* YES stays normal in flow */
+.btn__icon{ font-size: 1.15rem; transform: translateY(1px); }
+
 .btn--yes{
   background: linear-gradient(135deg, var(--yes), var(--yes2));
-  color: white;
+  color:white;
   box-shadow: 0 14px 24px rgba(255,45,85,.25);
 }
 .btn--yes:hover{ transform: translateY(-2px) scale(1.01); filter: brightness(1.02); }
 .btn--yes:active{ transform: translateY(0px) scale(.99); }
 
-/* NO also stays in flow initially (NO MORE OVERLAP) */
+/* NO button (glides away + shrinks on touch) */
 .btn--no{
+  background: linear-gradient(135deg, rgba(148,163,184,.9), rgba(148,163,184,.65));
+  color:#0f172a;
+  position:absolute;
+  left: 68%;
+  top: 18px;
+  box-shadow: 0 10px 18px rgba(15,23,42,.12);
+
+  /* buttery glide */
   transition:
-    transform 0.35s cubic-bezier(.22, 1, .36, 1),
+    left 0.35s cubic-bezier(.22, 1, .36, 1),
+    top 0.35s cubic-bezier(.22, 1, .36, 1),
+    transform 0.25s cubic-bezier(.22, 1, .36, 1),
     filter 0.25s ease;
-}
 
-  /* IMPORTANT: remove absolute positioning */
-  position: relative;
-  left: auto;
-  top: auto;
-
-  /* buttery glide now via transform */
-  transition: transform 0.35s cubic-bezier(.22, 1, .36, 1), filter 0.25s ease;
-  will-change: transform;
+  will-change: left, top, transform;
 }
 
 /* subtle style when user is near */
