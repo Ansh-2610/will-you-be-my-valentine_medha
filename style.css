@@ -160,7 +160,7 @@ h1{
   justify-content: center;
   align-items: center;
   gap: 14px;
-  padding: 12px;
+  padding: 10px;
   border-radius: 16px;
   background: rgba(255,255,255,.55);
   border: 1px solid rgba(255,255,255,.65);
@@ -206,9 +206,10 @@ h1{
 
 /* NO also stays in flow initially (NO MORE OVERLAP) */
 .btn--no{
-  background: linear-gradient(135deg, rgba(148,163,184,.9), rgba(148,163,184,.65));
-  color:#0f172a;
-  box-shadow: 0 10px 18px rgba(15,23,42,.12);
+  transition:
+    transform 0.35s cubic-bezier(.22, 1, .36, 1),
+    filter 0.25s ease;
+}
 
   /* IMPORTANT: remove absolute positioning */
   position: relative;
